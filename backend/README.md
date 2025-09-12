@@ -5,5 +5,7 @@
 * Create a virtual environment by running `python -m venv .venv`
 * Activate the virtual environment with `source .venv/bin/activate`
 * Install requirements by running `pip install -r requirements.txt`
-* Run the API by running `fastapi dev api/main.py --port <API-PORT>` (with a suitable port of your choosing). The API will be available at `localhost:<API-PORT>`
+* Create a .env file with the variables:
+    * `PORT=<SUITABLE API PORT>`
+* Run the API by running `make run`. The API will be available at `localhost:<API-PORT>`
 * Access the Swagger at `localhost:<API-PORT>/docs`
