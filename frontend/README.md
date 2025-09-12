@@ -1,8 +1,8 @@
 # IKEA2 Demo Frontend
 
 ## Requirements
-Node v20.19.4
-npm 10.8.2
+-Node v20.19.4
+-npm 10.8.2
 
 ## .env
 ```
