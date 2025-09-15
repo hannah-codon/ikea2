@@ -1,13 +1,13 @@
 import React from "react";
-import { CodonButton } from "@codongit/codon-component-library";
 import "@codongit/codon-component-library/styles.css";
 import "./index.css";
+import { RankChairView } from "./components/RankChairView";
 
 function App() {
   return (
-    <>
-      <CodonButton onClick={() => console.log("click")}>Click me</CodonButton>
-    </>
+    <div className="flex w-screen h-screen bg-codon-bg-beige">
+      <RankChairView />
+    </div>
   );
 }
 
