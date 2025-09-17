@@ -6,7 +6,7 @@ from src.models import IkeaEntry, MaterialsTable
 app = FastAPI()
 
 origins = [
-   "*",
+    "*",
 ]
 
 app.add_middleware(
@@ -37,24 +37,22 @@ def get_entry(url: str) -> IkeaEntry:
 
 @app.get("/entry/similar/{pid}")
 def get_similar_entries(pid: str) -> list[IkeaEntry]:
-    return [
-        IkeaEntry(
-            pid="123",
-            image_url="ikea.se/chair",
-            name="Chair",
-            price=100,
-            explanation="This is a chair",
-            eco_score=10,
-        ),
-        IkeaEntry(
-            pid="1234",
-            image_url="ikea.se/chair2",
-            name="Chair2",
-            price=200,
-            explanation="This is also a chair",
-            eco_score=8,
-        ),
-    ]
+    items = crud.find_similar_items(pid)
+    if not items:
+        return []
+    res = []
+    for item in items:
+        res.append(
+            IkeaEntry(
+                pid=item.article_id,
+                image_url="https://www.ikea.com/se/en/images/products/groensta-chair-with-armrests-in-outdoor-grey-turquoise__1243805_pe920954_s5.jpg?f=xl",
+                name="Chair",
+                price=100,
+                explanation="This is a chair",
+                eco_score=10,
+            )
+        )
+    return res
 
 
 @app.post("/entry/compare/")
@@ -76,9 +74,9 @@ def get_materials_table() -> MaterialsTable:
     )
 
 
-@app.get("/db_item/{item_id}")
-def read_item(item_id: int):
-    db_item = crud.get_item(item_id)
+@app.get("/db_item/{article_id}")
+def read_item(article_id: str):
+    db_item = crud.get_item(article_id)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
