@@ -46,8 +46,12 @@ export function ItemResults(props: ItemResultsProps) {
         );
         await showModal(
           "alert",
-          "Explanation",
-          explanation || "No explanation available.",
+          "Why is this item better?",
+          explanation ? (
+            <div className="w-[300px] text-sm font-thin">{explanation}</div>
+          ) : (
+            "No explanation available."
+          ),
         );
       };
       showExplainModal();

@@ -69,7 +69,8 @@ def compare_items(items: pd.DataFrame)-> str:
     system_prompt_content = """
     I will give you information in json format about two Ikea chairs and I want
     you to give me an concise explanation in exactly two sentences why the chair with 
-    the better score is actually better based on the given information.
+    the better score is actually better based on the given information. Max 150 characters.
+    Call the chairs by their name. No markdown. No need to mention the score directly.
     The information I give you about the chairs are:
     - score
     - materials
@@ -97,7 +98,7 @@ def compare_items(items: pd.DataFrame)-> str:
     ]
 
     response = client.chat.completions.create(
-        model="gpt-5",  
+        model="gpt-4o",  
         messages=messages
     )
     explanation= response.choices[0].message.content

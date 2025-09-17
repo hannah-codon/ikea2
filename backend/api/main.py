@@ -7,6 +7,8 @@ import pandas as pd
 chairs_df = pd.read_csv("/mnt/data/projects/hackathons/mega-trend/data/all_chairs_w_explanation.csv")
 chairs_df['article_number'] = chairs_df['article_number'].astype(str)
 
+print("Chairs DF SIZE", chairs_df.shape)
+
 app = FastAPI()
 
 origins = [
@@ -27,7 +29,6 @@ def hello_world():
     return {"message": "Hello, World"}
 
 def get_ikea_entry_from_csv(df: pd.DataFrame, article_nr: str) -> IkeaEntry | None:
-    print(chairs_df.columns)
     article_row = df[df['article_number'] == str(article_nr)]
     if article_row.empty:
         return None
@@ -53,12 +54,11 @@ def get_entry(url: str) -> IkeaEntry:
     # If article number starts with 0, remove it
     if article_nr.startswith("0"):
         article_nr = article_nr[1:]
-
-    print("ARTICLE NR", article_nr)
-    name = url.rstrip('/').split('/')[-1].split('-')[0]
-    name = name.lower().capitalize()
     
     ikea_entry = get_ikea_entry_from_csv(chairs_df, article_nr)
+    name = url.rstrip('/').split('/')[-1].split('-')[0]
+    name = name.lower().capitalize()
+    ikea_entry.name = name
 
     return ikea_entry
 
@@ -72,6 +72,7 @@ def get_similar_entries(pid: str) -> list[IkeaEntry]:
     res = []
     for item in items:
         article_id = item.article_id
+        print("Found similar item:", article_id)
         ikea_entry = get_ikea_entry_from_csv(chairs_df, article_id)
         if ikea_entry is not None:
             res.append(ikea_entry)
@@ -80,9 +81,10 @@ def get_similar_entries(pid: str) -> list[IkeaEntry]:
 
 @app.post("/entry/compare/")
 def compare_entries(pids: list[str]) -> str:
+    print('find me pids', pids)
     if len(pids) != 2:
         raise HTTPException(status_code=400, detail="Exactly two IDs are required")
-    explanation = crud.compare_items(chairs_df.loc[chairs_df["id"].isin(pids)])
+    explanation = crud.compare_items(chairs_df.loc[chairs_df["article_number"].isin(pids)])
     return explanation
 
 
@@ -110,7 +112,6 @@ def read_item(article_id: str):
 def create_db_item(article_id: str):
     mock_embedding = [0.1] * 384  # Replace with actual embedding generation logic
     db_item = crud.write_item(article_id=article_id, embedding=mock_embedding)
-    print("DB ITEM", db_item)
     return db_item
 
 

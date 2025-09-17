@@ -19,7 +19,7 @@ export function UploadItem(props: UploadItemProps) {
     <div className="flex flex-row gap-2">
       <CodonInput
         type="text"
-        placeholder="Enter IKEA url here"
+        placeholder="Paste URL here"
         value={url}
         setValue={setUrl}
       />

@@ -89,6 +89,7 @@ export class ApiHandler {
       method: "GET",
       headers: { Accept: "application/json" },
     });
+    await new Promise((resolve) => setTimeout(resolve, 700));
     try {
       const result = await fetch(request);
       if (!result.ok) {

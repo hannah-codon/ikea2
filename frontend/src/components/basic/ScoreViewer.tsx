@@ -8,7 +8,7 @@ export type ScoreViewerProps = {
 export default function ScoreViewer(props: ScoreViewerProps) {
   const { score, explanation } = props;
   const scoreColors = ["bg-green-500", "bg-yellow-400", "bg-red-500"];
-  const newScore = Math.min(Math.max(props.score, 0), 2); 
+  const newScore = Math.min(Math.max(props.score, 0), 2);
 
   return (
     <div className="flex flex-col items-center w-full h-[200px] justify-center gap-2">
@@ -22,8 +22,7 @@ export default function ScoreViewer(props: ScoreViewerProps) {
             />
           ))}
         </div>
-        <span className="ml-3 text-lg font-bold text-gray-800">{newScore}</span>
-        <span className="ml-4 text-gray-700 max-w-xs text-left text-xs w-[300px]">
+        <span className="ml-4 text-gray-700 max-w-xs font-thin text-left text-xs w-[300px]">
           {truncateText(explanation, 200)}
         </span>
       </div>
@@ -31,8 +30,7 @@ export default function ScoreViewer(props: ScoreViewerProps) {
   );
 }
 
-
 const truncateText = (text: string, maxLength: number) => {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + "...";
-}
+};
