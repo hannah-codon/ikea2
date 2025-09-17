@@ -67,15 +67,19 @@ export class ApiHandler {
       headers: { Accept: "application/json" },
     });
 
-    const result = await fetch(request);
-    if (!result.ok) {
+    try {
+      const result = await fetch(request);
+      if (!result.ok) {
+        return null;
+      }
+      const data: APIIkeaEntry | null = await result.json();
+      if (data !== null) {
+        return transformIkeaEntry(data);
+      }
+      return null;
+    } catch {
       return null;
     }
-    const data: APIIkeaEntry | null = await result.json();
-    if (data !== null) {
-      return transformIkeaEntry(data);
-    }
-    return null;
   }
 
   static async getSimilarIkeaEntries(pid: string): Promise<IkeaEntry[]> {
@@ -84,12 +88,16 @@ export class ApiHandler {
       method: "GET",
       headers: { Accept: "application/json" },
     });
-    const result = await fetch(request);
-    if (!result.ok) {
-      return [];
+    try {
+      const result = await fetch(request);
+      if (!result.ok) {
+        return [ikeaEntry1, ikeaEntry2, ikeaEntry3].map(transformIkeaEntry);
+      }
+      const data: APIIkeaEntry[] = await result.json();
+      return data.map(transformIkeaEntry);
+    } catch {
+      return [ikeaEntry1, ikeaEntry2, ikeaEntry3].map(transformIkeaEntry);
     }
-    const data: APIIkeaEntry[] = await result.json();
-    return data.map(transformIkeaEntry);
   }
 
   static async getItemComparasionExplanation(
