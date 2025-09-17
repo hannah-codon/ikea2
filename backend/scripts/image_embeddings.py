@@ -1,0 +1,70 @@
+import torch
+from transformers import AutoImageProcessor, AutoModel
+from transformers.image_utils import load_image
+import csv
+from typing import List, Dict
+
+def process_images_from_csv(csv_path: str, url_column: str = 'url') -> List[Dict]:
+    """
+    Read CSV with image URLs and return CLS tokens for each image.
+    
+    Args:
+        csv_path: Path to CSV file
+        url_column: Name of column containing image URLs
+    
+    Returns:
+        List of dictionaries with original row data + cls_token
+    """
+    # Load model and processor
+    processor = AutoImageProcessor.from_pretrained("facebook/dinov3-vits16-pretrain-lvd1689m")
+    model = AutoModel.from_pretrained("facebook/dinov3-vits16-pretrain-lvd1689m")
+    
+    # Read CSV
+    with open(csv_path, 'r') as file:
+        reader = csv.DictReader(file)
+        rows = list(reader)
+    
+    results = []
+    
+    for i, row in enumerate(rows):
+        try:
+            # Get image URL from specified column
+            image_url = row[url_column]
+            print(f"Processing image {i+1}/{len(rows)}: {image_url}")
+            
+            # Load and process image
+            image = load_image(image_url)
+            inputs = processor(images=image, return_tensors="pt")
+            
+            # Get CLS token
+            with torch.inference_mode():
+                outputs = model(**inputs)
+            last_hidden_states = outputs.last_hidden_state
+            cls_token = last_hidden_states[:, 0, :].squeeze().numpy()
+            
+            # Add CLS token to row data
+            result = row.copy()
+            result['cls_token'] = cls_token
+            results.append(result)
+            
+        except Exception as e:
+            print(f"Error processing image {i+1}: {e}")
+            # Add row with None cls_token on error
+            result = row.copy()
+            result['cls_token'] = None
+            results.append(result)
+    
+    return results
+
+# Example usage
+if __name__ == "__main__":
+    # Replace with your CSV path and URL column name
+    csv_file = "backend/scripts/test.csv"  # CSV should have a column with image URLs
+    results = process_images_from_csv(csv_file, url_column='image_url')
+    
+    # Print results
+    for i, result in enumerate(results):
+        if result['cls_token'] is not None:
+            print(f"Image {i+1}: CLS token shape {result['cls_token'].shape}")
+        else:
+            print(f"Image {i+1}: Failed to process")

@@ -1,0 +1,5 @@
+id,name,image_url,category
+1,Sample Cat,"http://images.cocodataset.org/val2017/000000039769.jpg",animal
+2,Sample Dog,"http://images.cocodataset.org/val2017/000000289343.jpg",animal
+3,Sample Person,"http://images.cocodataset.org/val2017/000000037777.jpg",person
+4,Sample Vehicle,"http://images.cocodataset.org/val2017/000000252219.jpg",vehicle
