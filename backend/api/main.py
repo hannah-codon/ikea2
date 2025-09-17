@@ -73,10 +73,11 @@ def get_similar_entries(pid: str) -> list[IkeaEntry]:
 
 
 @app.post("/entry/compare/")
-def compare_entries(pids: tuple[str, str]) -> str:
+def compare_entries(pids: list[str]) -> str:
     if len(pids) != 2:
         raise HTTPException(status_code=400, detail="Exactly two IDs are required")
-    return "Based on two IDS, explain how these items are similar, and how they differ in the climate aspect"
+    explanation = crud.compare_items(chairs_df.loc[chairs_df["id"].isin(pids)])
+    return explanation
 
 
 @app.get("/materials-table/")

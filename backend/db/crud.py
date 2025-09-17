@@ -2,6 +2,8 @@ from db.db import Item, SessionLocal
 from db.models import ItemRead
 from openai import OpenAI
 import os
+import pandas as pd
+import json
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -58,15 +60,16 @@ def get_all_items():
     items = session.query(Item).all()
     return [ItemRead.model_validate(i) for i in items]
 
-def compare_items(pids_info: list[str])-> str:
+def compare_items(items: pd.DataFrame)-> str:
+
     client = OpenAI(
             api_key= os.getenv("OPENROUTER_API_KEY"),
             base_url="https://openrouter.ai/api/v1"
             )
     system_prompt_content = """
-    I will give you information about two Ikea chairs and I want
-    you to give me an explanation in two sentences why the chair with 
-    the better score is actually better based on the other information.
+    I will give you information in json format about two Ikea chairs and I want
+    you to give me an concise explanation in exactly two sentences why the chair with 
+    the better score is actually better based on the given information.
     The information I give you about the chairs are:
     - score
     - materials
@@ -74,15 +77,19 @@ def compare_items(pids_info: list[str])-> str:
     - durability 
     - weight
     - weight score
-    This should give some transperency why one chair got a better score.
+
+    This should give clear transperency by reasoning why one chair got a better score.
     """
     system_prompt = {
         "role": "system",
         "content": system_prompt_content
     }
+    chairs = items.to_dict(orient="records")
+    chairs_json = json.dumps({"chair_1": chairs[0], "chair_2": chairs[1]}, indent=2, ensure_ascii=False)
+
     user_message = {
         "role": "user",
-        "content":pids_info
+        "content":chairs_json
     }
     messages = [
         system_prompt,
