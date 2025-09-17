@@ -52,7 +52,11 @@ if __name__ == "__main__":
     results = process_images_from_csv(csv_file, url_column='image_url')
     for i, result in enumerate(results):
         if result['cls_token'] is not None:
-            crud.write_item(result['article_number'], result['cls_token'])
+            if crud.get_item(result['article_number']) is not None:
+                print(f"Item {result['article_number']} already exists")
+                continue
+            else:
+                crud.write_item(result['article_number'], result['cls_token'])
             print(f"Image {i+1}: CLS token shape {result['cls_token'].shape}")
         else:
             print(f"Image {i+1}: Failed to process")
