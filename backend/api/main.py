@@ -82,3 +82,29 @@ def read_item(item_id: int):
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
+
+
+@app.post("/db_item/")
+def create_db_item(article_id: str):
+    mock_embedding = [0.1] * 384  # Replace with actual embedding generation logic
+    db_item = crud.write_item(article_id=article_id, embedding=mock_embedding)
+    print("DB ITEM", db_item)
+    return db_item
+
+
+@app.get("/similar_items/")
+def get_similar_db_items(article_id: str, top_k: int = 5):
+    items = crud.find_similar_items(article_id, top_k)
+    return items
+
+
+@app.delete("/db_items/")
+def delete_all_db_items():
+    num_deleted = crud.delete_all_items()
+    return {"deleted": num_deleted}
+
+
+@app.get("/db_items/")
+def get_all_db_items():
+    items = crud.get_all_items()
+    return items
