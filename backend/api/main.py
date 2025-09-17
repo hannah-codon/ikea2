@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.models import IkeaEntry, MaterialsTable
 
 chairs_df = pd.read_csv(
-    "/mnt/data/projects/hackathons/mega-trend/data/all_chairs_w_explanation_v3.csv"
+    "/mnt/data/projects/hackathons/mega-trend/data/all_chairs_w_explanation_v5.csv"
 )
 chairs_df["article_number"] = chairs_df["article_number"].astype(str)
 
@@ -73,8 +73,9 @@ def get_similar_entries(pid: str) -> list[IkeaEntry]:
     items = crud.find_similar_items(pid)
     print(len(items))
 
-    og_name = str(chairs_df[chairs_df['article_number'] == pid]['name'].iloc[0])
-    og_score = chairs_df[chairs_df['article_number'] == pid]['rel_score'].iloc[0]
+    og_name = str(chairs_df[chairs_df["article_number"] == pid]["name"].iloc[0])
+    og_score = chairs_df[chairs_df["article_number"] == pid]["rel_score"].iloc[0]
+    print("LEN ITEMS", len(items))
     if not items:
         return []
     res = []
@@ -83,12 +84,16 @@ def get_similar_entries(pid: str) -> list[IkeaEntry]:
         print("Found similar item:", article_id)
         ikea_entry = get_ikea_entry_from_csv(chairs_df, article_id)
         if ikea_entry is not None:
+            print("IKEA ENTRY", ikea_entry.eco_score)
+            print("OG_SCORE", og_score)
             if ikea_entry.name == og_name:
                 continue
-            elif ikea_entry.score > og_score:
+            elif ikea_entry.eco_score > og_score:
                 continue
             else:
+                print("APPENDING MATCH", ikea_entry)
                 res.append(ikea_entry)
+    res = sorted(res, key=lambda x: x.name)[:5]
     return res
 
 
