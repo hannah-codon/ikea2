@@ -92,12 +92,12 @@ export class ApiHandler {
     try {
       const result = await fetch(request);
       if (!result.ok) {
-        return [ikeaEntry1, ikeaEntry2, ikeaEntry3].map(transformIkeaEntry);
+        return [].map(transformIkeaEntry);
       }
       const data: APIIkeaEntry[] = await result.json();
       return data.map(transformIkeaEntry);
     } catch {
-      return [ikeaEntry1, ikeaEntry2, ikeaEntry3].map(transformIkeaEntry);
+      return [].map(transformIkeaEntry);
     }
   }
 

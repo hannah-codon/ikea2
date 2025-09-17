@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.models import IkeaEntry, MaterialsTable
 import pandas as pd
 
-chairs_df = pd.read_csv("/mnt/data/projects/hackathons/mega-trend/data/all_chairs.csv")
+chairs_df = pd.read_csv("/mnt/data/projects/hackathons/mega-trend/data/all_chairs_w_explanation.csv")
 chairs_df['article_number'] = chairs_df['article_number'].astype(str)
 
 app = FastAPI()
@@ -26,6 +26,25 @@ app.add_middleware(
 def hello_world():
     return {"message": "Hello, World"}
 
+def get_ikea_entry_from_csv(df: pd.DataFrame, article_nr: str) -> IkeaEntry | None:
+    print(chairs_df.columns)
+    article_row = df[df['article_number'] == str(article_nr)]
+    if article_row.empty:
+        return None
+    image_url = article_row['image_url'].iloc[0]
+    article_nr = article_row['article_number'].iloc[0]
+    price = article_row['price'].iloc[0]
+    explanation = article_row['gen_description'].iloc[0]
+    eco_score = article_row['rel_score'].iloc[0]
+
+    return IkeaEntry(
+        pid=article_nr,
+        image_url=image_url,
+        name="Chair",
+        price=price,
+        explanation=explanation,
+        eco_score=eco_score,
+    )
 
 @app.post("/entry/")
 def get_entry(url: str) -> IkeaEntry:
@@ -39,44 +58,23 @@ def get_entry(url: str) -> IkeaEntry:
     name = url.rstrip('/').split('/')[-1].split('-')[0]
     name = name.lower().capitalize()
     
-    article_row = chairs_df[chairs_df['article_number'] == str(article_nr)]
+    ikea_entry = get_ikea_entry_from_csv(chairs_df, article_nr)
 
-    if article_row.empty:
-        raise HTTPException(status_code=404, detail="Item not found")
-
-    image_url = article_row['image_url'].iloc[0]
-    article_nr = article_row['article_number'].iloc[0]
-    price = article_row['price'].iloc[0]
-    explanation = article_row['description'].iloc[0]
-    # eco_score = article_row['score'].iloc[0]
-
-    return IkeaEntry(
-        pid=article_nr,
-        image_url=image_url,
-        name=name,
-        price=price,
-        explanation=explanation,
-        eco_score=0,
-    )
+    return ikea_entry
 
 
 @app.get("/entry/similar/{pid}")
 def get_similar_entries(pid: str) -> list[IkeaEntry]:
     items = crud.find_similar_items(pid)
+    print(len(items))
     if not items:
         return []
     res = []
     for item in items:
-        res.append(
-            IkeaEntry(
-                pid=item.article_id,
-                image_url="https://www.ikea.com/se/en/images/products/groensta-chair-with-armrests-in-outdoor-grey-turquoise__1243805_pe920954_s5.jpg?f=xl",
-                name="Chair",
-                price=100,
-                explanation="This is a chair",
-                eco_score=10,
-            )
-        )
+        article_id = item.article_id
+        ikea_entry = get_ikea_entry_from_csv(chairs_df, article_id)
+        if ikea_entry is not None:
+            res.append(ikea_entry)
     return res
 
 

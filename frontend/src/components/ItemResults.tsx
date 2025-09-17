@@ -61,13 +61,13 @@ export function ItemResults(props: ItemResultsProps) {
         <CodonSpinnerView textAbove="Loading item details..." />
       )}
       {item !== null && similarItems !== null && (
-        <div className="flex flex-row align-center justify-center items-center">
-          <div className="flex flex-col">
-            <p>Your item:</p>
+        <div className="flex flex-row align-center justify-center items-center gap-10 font-bold">
+          <div className="flex flex-col items-center gap-2">
+            <p className="font-bold">Your uploaded item:</p>
             <IkeaItemCard item={item} />
           </div>
-          <div className="flex p-8 flex-col gap-2">
-            <p>Similar items</p>
+          <div className="flex p-8 flex-col items-center font-bold gap-2">
+            <p className="font-bold">Similar items:</p>
             <ItemCarousel items={similarItems} onExplain={onExplain} />
           </div>
         </div>

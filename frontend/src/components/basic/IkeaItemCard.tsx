@@ -10,10 +10,10 @@ export type IkeaItemCardProps = {
 export function IkeaItemCard(props: IkeaItemCardProps) {
   const { item, onExplain } = props;
 
-  const secondDivHeight = onExplain ? "h-[300px]" : "h-[200px]";
+  const secondDivHeight = onExplain ? "h-[250px]" : "h-[200px]";
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden w-64 flex flex-col transition-transform transform hover:shadow-xl border border-gray-200">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden w-[400px] flex flex-col transition-transform transform hover:shadow-xl border border-gray-200">
       <div className="flex flex-col h-[250px]">
         <h3 className="text-lg font-semibold text-codon-gray-800 truncate mb-2 px-4 pt-4 text-center">
           {item.name}
