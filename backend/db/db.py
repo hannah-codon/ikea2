@@ -22,8 +22,8 @@ Base = declarative_base()
 class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    embedding = Column(Vector(3))  # Use Vector type from pgvector.sqlalchemy
+    article_id = Column(String, unique=True, index=True)
+    embedding = Column(Vector(384))  # Use Vector type from pgvector.sqlalchemy
 
 
 # Function to create tables and enable the pgvector extension

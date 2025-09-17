@@ -1,12 +1,14 @@
-from fastapi import FastAPI
+import db.crud as crud
+from fastapi import FastAPI, HTTPException
 from src.models import IkeaEntry, MaterialsTable
-from fastapi import HTTPException
+
 app = FastAPI()
 
 
 @app.get("/")
 def hello_world():
     return {"message": "Hello, World"}
+
 
 @app.get("/entry/{url}")
 def get_entry(url: str) -> IkeaEntry:
@@ -18,6 +20,7 @@ def get_entry(url: str) -> IkeaEntry:
         explanation="This is a chair",
         eco_score=10,
     )
+
 
 @app.get("/entry/similar/{pid}")
 def get_similar_entries(pid: str) -> list[IkeaEntry]:
@@ -40,11 +43,13 @@ def get_similar_entries(pid: str) -> list[IkeaEntry]:
         ),
     ]
 
+
 @app.post("/entry/compare/")
-def compare_entries(pids: list[str, str]) -> str:
+def compare_entries(pids: tuple[str, str]) -> str:
     if len(pids) != 2:
         raise HTTPException(status_code=400, detail="Exactly two IDs are required")
     return "Based on two IDS, explain how these items are similar, and how they differ in the climate aspect"
+
 
 @app.get("/materials-table/")
 def get_materials_table() -> MaterialsTable:
@@ -56,3 +61,11 @@ def get_materials_table() -> MaterialsTable:
             ["Plastic", "3"],
         ],
     )
+
+
+@app.get("/db_item/{item_id}")
+def read_item(item_id: int):
+    db_item = crud.get_item(item_id)
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return db_item
