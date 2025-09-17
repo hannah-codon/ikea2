@@ -10,7 +10,7 @@
     * `DB_USER=postgres`
     * `DB_PASSWORD=PASSWORD`
     * `DB_NAME=hackathon_db`
-    * `DB_HOST=itapua.codon.local`
+    * `DB_HOST=hackathon-pgvector-db`
     * `DB_PORT=5432`
 * Run the API by running `make run`. The API will be available at `localhost:<API-PORT>`
 * Access the Swagger at `localhost:<API-PORT>/docs`
