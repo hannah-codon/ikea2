@@ -3,6 +3,7 @@ from transformers import AutoImageProcessor, AutoModel
 from transformers.image_utils import load_image
 import csv
 from typing import List, Dict
+import db.crud as crud
 
 def process_images_from_csv(csv_path: str, url_column: str = 'url') -> List[Dict]:
     """
@@ -58,13 +59,13 @@ def process_images_from_csv(csv_path: str, url_column: str = 'url') -> List[Dict
 
 # Example usage
 if __name__ == "__main__":
-    # Replace with your CSV path and URL column name
-    csv_file = "backend/scripts/test.csv"  # CSV should have a column with image URLs
+    csv_file = "/mnt/data/projects/hackathons/mega-trend/data/ikea_csv/" 
     results = process_images_from_csv(csv_file, url_column='image_url')
-    
+    #csv path /mnt/data/projects/hackathons/mega-trend/data/ikea_cs
     # Print results
     for i, result in enumerate(results):
         if result['cls_token'] is not None:
+            crud.write_item(result['article_number'], result['cls_token'])
             print(f"Image {i+1}: CLS token shape {result['cls_token'].shape}")
         else:
             print(f"Image {i+1}: Failed to process")
