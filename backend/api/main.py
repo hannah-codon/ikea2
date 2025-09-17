@@ -1,11 +1,13 @@
 import db.crud as crud
+import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from src.models import IkeaEntry, MaterialsTable
-import pandas as pd
 
-chairs_df = pd.read_csv("/mnt/data/projects/hackathons/mega-trend/data/all_chairs_w_explanation.csv")
-chairs_df['article_number'] = chairs_df['article_number'].astype(str)
+chairs_df = pd.read_csv(
+    "/mnt/data/projects/hackathons/mega-trend/data/all_chairs_w_explanation_v3.csv"
+)
+chairs_df["article_number"] = chairs_df["article_number"].astype(str)
 
 print("Chairs DF SIZE", chairs_df.shape)
 
@@ -28,35 +30,38 @@ app.add_middleware(
 def hello_world():
     return {"message": "Hello, World"}
 
+
 def get_ikea_entry_from_csv(df: pd.DataFrame, article_nr: str) -> IkeaEntry | None:
-    article_row = df[df['article_number'] == str(article_nr)]
+    article_row = df[df["article_number"] == str(article_nr)]
     if article_row.empty:
         return None
-    image_url = article_row['image_url'].iloc[0]
-    article_nr = article_row['article_number'].iloc[0]
-    price = article_row['price'].iloc[0]
-    explanation = article_row['gen_description'].iloc[0]
-    eco_score = article_row['rel_score'].iloc[0]
-
+    image_url = article_row["image_url"].iloc[0]
+    article_nr = article_row["article_number"].iloc[0]
+    price = article_row["price"].iloc[0]
+    explanation = article_row["gen_description"].iloc[0]
+    eco_score = article_row["rel_score"].iloc[0]
+    name = article_row["name"].iloc[0]
+    print("NAME", name)
     return IkeaEntry(
         pid=article_nr,
         image_url=image_url,
-        name="Chair",
+        name=name,
         price=price,
         explanation=explanation,
         eco_score=eco_score,
     )
 
+
 @app.post("/entry/")
 def get_entry(url: str) -> IkeaEntry:
-    article_nr = url.rstrip('/').split('/')[-1].split('-')[-1]
+    article_nr = url.rstrip("/").split("/")[-1].split("-")[-1]
     article_nr = article_nr.replace("s", "")
     # If article number starts with 0, remove it
     if article_nr.startswith("0"):
         article_nr = article_nr[1:]
-    
+
     ikea_entry = get_ikea_entry_from_csv(chairs_df, article_nr)
-    name = url.rstrip('/').split('/')[-1].split('-')[0]
+    name = url.rstrip("/").split("/")[-1].split("-")[0]
     name = name.lower().capitalize()
     ikea_entry.name = name
 
@@ -89,10 +94,12 @@ def get_similar_entries(pid: str) -> list[IkeaEntry]:
 
 @app.post("/entry/compare/")
 def compare_entries(pids: list[str]) -> str:
-    print('find me pids', pids)
+    print("find me pids", pids)
     if len(pids) != 2:
         raise HTTPException(status_code=400, detail="Exactly two IDs are required")
-    explanation = crud.compare_items(chairs_df.loc[chairs_df["article_number"].isin(pids)])
+    explanation = crud.compare_items(
+        chairs_df.loc[chairs_df["article_number"].isin(pids)]
+    )
     return explanation
 
 
