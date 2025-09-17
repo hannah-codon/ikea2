@@ -19,8 +19,13 @@ def create_item(name: str, embedding: list):
 
 def get_item(article_id: str):
     session = SessionLocal()
-    db_item = session.query(Item).filter(Item.article_id == article_id).first()
-    return ItemRead.model_validate(db_item)
+    try:
+        db_item = session.query(Item).filter(Item.article_id == article_id).first()
+        if db_item is None:
+            return None
+        return ItemRead.model_validate(db_item)
+    finally:
+        session.close()
 
 
 def write_item(article_id: str, embedding: list[float]):

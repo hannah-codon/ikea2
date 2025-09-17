@@ -48,7 +48,7 @@ def process_images_from_csv(csv_path: str, url_column: str = 'url') -> List[Dict
     return results
 
 if __name__ == "__main__":
-    csv_file = "/mnt/data/projects/hackathons/mega-trend/data/all_chairs.csv" 
+    csv_file = "/mnt/data/projects/hackathons/mega-trend/data/extra.csv" 
     results = process_images_from_csv(csv_file, url_column='image_url')
     for i, result in enumerate(results):
         if result['cls_token'] is not None:

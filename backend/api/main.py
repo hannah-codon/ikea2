@@ -67,6 +67,9 @@ def get_entry(url: str) -> IkeaEntry:
 def get_similar_entries(pid: str) -> list[IkeaEntry]:
     items = crud.find_similar_items(pid)
     print(len(items))
+
+    og_name = str(chairs_df[chairs_df['article_number'] == pid]['name'].iloc[0])
+    og_score = chairs_df[chairs_df['article_number'] == pid]['rel_score'].iloc[0]
     if not items:
         return []
     res = []
@@ -75,7 +78,12 @@ def get_similar_entries(pid: str) -> list[IkeaEntry]:
         print("Found similar item:", article_id)
         ikea_entry = get_ikea_entry_from_csv(chairs_df, article_id)
         if ikea_entry is not None:
-            res.append(ikea_entry)
+            if ikea_entry.name == og_name:
+                continue
+            elif ikea_entry.score > og_score:
+                continue
+            else:
+                res.append(ikea_entry)
     return res
 
 
