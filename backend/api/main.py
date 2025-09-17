@@ -25,9 +25,6 @@ app.add_middleware(
 def hello_world():
     return {"message": "Hello, World"}
 
-#ur url ta article nr
-#hitta i csvn 
-#returna ikea entry
 
 @app.get("/entry/{url}")
 def get_entry(url: str) -> IkeaEntry:
@@ -44,7 +41,7 @@ def get_entry(url: str) -> IkeaEntry:
     price = article_row['price'].iloc[0]
     explanation = article_row['description'].iloc[0]
     eco_score = article_row['score'].iloc[0]
-    
+
     return IkeaEntry(
         pid=article_nr,
         image_url=image_url,
