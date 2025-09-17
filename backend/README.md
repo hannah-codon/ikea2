@@ -7,5 +7,10 @@
 * Install requirements by running `pip install -r requirements.txt`
 * Create a .env file with the variables:
     * `PORT=<SUITABLE API PORT>`
+    * `DB_USER=postgres`
+    * `DB_PASSWORD=PASSWORD`
+    * `DB_NAME=hackathon_db`
+    * `DB_HOST=itapua.codon.local`
+    * `DB_PORT=5432`
 * Run the API by running `make run`. The API will be available at `localhost:<API-PORT>`
 * Access the Swagger at `localhost:<API-PORT>/docs`
