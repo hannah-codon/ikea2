@@ -57,7 +57,7 @@ const ikeaEntry3 = {
   eco_score: 0,
 };
 
-const baseApiUrl = "http://localhost:8093";
+const baseApiUrl = "http://localhost:8091";
 
 export class ApiHandler {
   static async getIkeaEntryFromUrl(url: string): Promise<IkeaEntry | null> {
