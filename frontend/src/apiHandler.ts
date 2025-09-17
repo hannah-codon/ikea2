@@ -57,24 +57,33 @@ const ikeaEntry3 = {
   eco_score: 0,
 };
 
-class ApiHandler {
-  getIkeaEntryFromUrl(url: string): Promise<APIIkeaEntry | null> {
-    const result: APIIkeaEntry | null = Math.random() > 0.5 ? ikeaEntry1 : null;
-    return Promise.resolve(result);
+export class ApiHandler {
+  static getIkeaEntryFromUrl(url: string): Promise<IkeaEntry | null> {
+    const result: APIIkeaEntry = ikeaEntry1;
+    if (result !== null) {
+      return Promise.resolve(transformIkeaEntry(result));
+    }
+    return Promise.resolve(null);
   }
 
-  getSimilarIkeaEntries(pid: string): Promise<APIIkeaEntry[]> {
+  static getSimilarIkeaEntries(pid: string): Promise<IkeaEntry[]> {
     const entries = [ikeaEntry2, ikeaEntry3];
-    return Promise.resolve(entries);
+    const transformedEntries = entries.map(transformIkeaEntry);
+    return Promise.resolve(transformedEntries);
   }
 
-  getItemComparasionExplanation(pid1: string, pid2: string): Promise<string> {
+  static getItemComparasionExplanation(
+    pid1: string,
+    pid2: string,
+  ): Promise<string> {
     const explanation =
       "This is a sample explanation comparing the two IKEA products.";
     return Promise.resolve(explanation);
   }
 
-  getMaterialRankingTable(): Promise<{ material: string; score: number }[]> {
+  static getMaterialRankingTable(): Promise<
+    { material: string; score: number }[]
+  > {
     const table = [
       { material: "Wood", score: 5 },
       { material: "Plastic", score: 2 },

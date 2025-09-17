@@ -1,0 +1,19 @@
+import { IkeaEntry } from "../../apiHandler";
+import { IkeaItemCard } from "./IkeaItemCard";
+
+export type ItemCarouselProps = {
+  items: IkeaEntry[];
+};
+
+export default function ItemCarousel(props: ItemCarouselProps) {
+  const { items } = props;
+  return (
+    <div className="flex flex-col items-center w-72 h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 border rounded-xl shadow-md bg-white py-4">
+      {items.map((item) => (
+        <div className="my-2 w-full flex justify-center" key={item.pid}>
+          <IkeaItemCard item={item} />
+        </div>
+      ))}
+    </div>
+  );
+}
