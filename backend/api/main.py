@@ -2,6 +2,9 @@ import db.crud as crud
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from src.models import IkeaEntry, MaterialsTable
+import pandas as pd
+
+chairs_df = pd.read_csv("/mnt/data/projects/hackathons/mega-trend/data/all_chairs.csv")
 
 app = FastAPI()
 
@@ -22,16 +25,33 @@ app.add_middleware(
 def hello_world():
     return {"message": "Hello, World"}
 
+#ur url ta article nr
+#hitta i csvn 
+#returna ikea entry
 
 @app.get("/entry/{url}")
 def get_entry(url: str) -> IkeaEntry:
+    article_nr = url.rstrip('/').split('/')[-1].split('-')[-1]
+    name = url.rstrip('/').split('/')[-1].split('-')[0]
+
+    article_row = chairs_df[chairs_df['article_number'] == article_nr]
+
+    if article_row.empty:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    image_url = article_row['image_url'].iloc[0]
+    article_nr = article_row['article_number'].iloc[0]
+    price = article_row['price'].iloc[0]
+    explanation = article_row['description'].iloc[0]
+    eco_score = article_row['score'].iloc[0]
+    
     return IkeaEntry(
-        pid="20557875",
-        image_url="https://www.ikea.com/se/en/images/products/groensta-chair-with-armrests-in-outdoor-grey-turquoise__1243805_pe920954_s5.jpg?f=xl",
-        name="Chair",
-        price=100,
-        explanation="This is a chair",
-        eco_score=10,
+        pid=article_nr,
+        image_url=image_url,
+        name=name,
+        price=price,
+        explanation=explanation,
+        eco_score=eco_score,
     )
 
 
