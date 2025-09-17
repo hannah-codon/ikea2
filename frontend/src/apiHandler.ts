@@ -61,9 +61,10 @@ const baseApiUrl = "http://localhost:8093";
 
 export class ApiHandler {
   static async getIkeaEntryFromUrl(url: string): Promise<IkeaEntry | null> {
-    const apiUrl = `${baseApiUrl}/entry/${url}`;
-    const request = new Request(apiUrl.toString(), {
-      method: "GET",
+    const apiUrl = `${baseApiUrl}/entry/`;
+    const apiUrlWithQuery = `${apiUrl}?url=${encodeURIComponent(url)}`;
+    const request = new Request(apiUrlWithQuery, {
+      method: "POST",
       headers: { Accept: "application/json" },
     });
 

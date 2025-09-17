@@ -5,6 +5,7 @@ from src.models import IkeaEntry, MaterialsTable
 import pandas as pd
 
 chairs_df = pd.read_csv("/mnt/data/projects/hackathons/mega-trend/data/all_chairs.csv")
+chairs_df['article_number'] = chairs_df['article_number'].astype(str)
 
 app = FastAPI()
 
@@ -26,12 +27,19 @@ def hello_world():
     return {"message": "Hello, World"}
 
 
-@app.get("/entry/{url}")
+@app.post("/entry/")
 def get_entry(url: str) -> IkeaEntry:
     article_nr = url.rstrip('/').split('/')[-1].split('-')[-1]
-    name = url.rstrip('/').split('/')[-1].split('-')[0]
+    article_nr = article_nr.replace("s", "")
+    # If article number starts with 0, remove it
+    if article_nr.startswith("0"):
+        article_nr = article_nr[1:]
 
-    article_row = chairs_df[chairs_df['article_number'] == article_nr]
+    print("ARTICLE NR", article_nr)
+    name = url.rstrip('/').split('/')[-1].split('-')[0]
+    name = name.lower().capitalize()
+    
+    article_row = chairs_df[chairs_df['article_number'] == str(article_nr)]
 
     if article_row.empty:
         raise HTTPException(status_code=404, detail="Item not found")
@@ -40,7 +48,7 @@ def get_entry(url: str) -> IkeaEntry:
     article_nr = article_row['article_number'].iloc[0]
     price = article_row['price'].iloc[0]
     explanation = article_row['description'].iloc[0]
-    eco_score = article_row['score'].iloc[0]
+    # eco_score = article_row['score'].iloc[0]
 
     return IkeaEntry(
         pid=article_nr,
@@ -48,7 +56,7 @@ def get_entry(url: str) -> IkeaEntry:
         name=name,
         price=price,
         explanation=explanation,
-        eco_score=eco_score,
+        eco_score=0,
     )
 
 
