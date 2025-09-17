@@ -14,6 +14,8 @@ export default function ScoreViewer(props: ScoreViewerProps) {
     "var(--codon-red-500)",
   ];
 
+  const statusCardColor = statusCardColors[score] || "var(--codon-gray-500)";
+
   return (
     <div className="flex flex-col items-center w-full gap-2">
       <p className="text-md text-codon-gray-800 font-semibold mb-2">
@@ -36,7 +38,7 @@ export default function ScoreViewer(props: ScoreViewerProps) {
       </div>
       <CodonStatusCard
         text={score === 0 ? "Good" : score === 1 ? "Average" : "Poor"}
-        color={statusCardColors[score]}
+        color={statusCardColor}
         size="small"
       />
     </div>

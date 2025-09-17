@@ -57,28 +57,62 @@ const ikeaEntry3 = {
   eco_score: 0,
 };
 
+const baseApiUrl = "http://localhost:8093";
+
 export class ApiHandler {
-  static getIkeaEntryFromUrl(url: string): Promise<IkeaEntry | null> {
-    const result: APIIkeaEntry = ikeaEntry1;
-    if (result !== null) {
-      return Promise.resolve(transformIkeaEntry(result));
+  static async getIkeaEntryFromUrl(url: string): Promise<IkeaEntry | null> {
+    const apiUrl = `${baseApiUrl}/entry/${url}`;
+    const request = new Request(apiUrl.toString(), {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
+
+    const result = await fetch(request);
+    if (!result.ok) {
+      return null;
     }
-    return Promise.resolve(null);
+    const data: APIIkeaEntry | null = await result.json();
+    if (data !== null) {
+      return transformIkeaEntry(data);
+    }
+    return null;
   }
 
-  static getSimilarIkeaEntries(pid: string): Promise<IkeaEntry[]> {
-    const entries = [ikeaEntry2, ikeaEntry3];
-    const transformedEntries = entries.map(transformIkeaEntry);
-    return Promise.resolve(transformedEntries);
+  static async getSimilarIkeaEntries(pid: string): Promise<IkeaEntry[]> {
+    const apiUrl = `${baseApiUrl}/entry/similar/${pid}`;
+    const request = new Request(apiUrl.toString(), {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
+    const result = await fetch(request);
+    if (!result.ok) {
+      return [];
+    }
+    const data: APIIkeaEntry[] = await result.json();
+    return data.map(transformIkeaEntry);
   }
 
-  static getItemComparasionExplanation(
+  static async getItemComparasionExplanation(
     pid1: string,
     pid2: string,
-  ): Promise<string> {
-    const explanation =
-      "This is a sample explanation comparing the two IKEA products.";
-    return Promise.resolve(explanation);
+  ): Promise<string | null> {
+    const apiUrl = `${baseApiUrl}/entry/compare/`;
+    const requestBody = [pid1, pid2];
+    const request = new Request(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    const result = await fetch(request);
+    if (!result.ok) {
+      return null;
+    }
+    const data: string = await result.json();
+    return data;
   }
 
   static getMaterialRankingTable(): Promise<
