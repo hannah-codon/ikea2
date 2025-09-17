@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { UploadItem } from "./UploadItem";
-import { IkeaEntry } from "../apiHandler";
 import { ItemResults } from "./ItemResults";
 
 export type RankChairProps = {};

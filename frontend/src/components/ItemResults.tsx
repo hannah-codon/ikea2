@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ApiHandler, IkeaEntry } from "../apiHandler";
 import {
   CodonImageViewer,
@@ -34,6 +34,10 @@ export function ItemResults(props: ItemResultsProps) {
     fetchItemDetails();
   }, [url]);
 
+  const onExplain = useCallback(() => {
+    alert("Explanation feature coming soon!");
+  }, []);
+
   return (
     <div className="flex flex-col h-full w-full items-center justify-center">
       {item === null && (
@@ -47,7 +51,7 @@ export function ItemResults(props: ItemResultsProps) {
           </div>
           <div className="flex p-8 flex-col gap-2">
             <p>Similar items</p>
-            <ItemCarousel items={similarItems} />
+            <ItemCarousel items={similarItems} onExplain={onExplain} />
           </div>
         </div>
       )}
